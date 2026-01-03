@@ -22,7 +22,9 @@ class DatabaseSettings(BaseSettings):
     @property
     def url(self) -> str:
         """Construct database URL."""
-        return f"postgresql+asyncpg://{self.user}:{self.password}@{self.host}:{self.port}/{self.name}"
+        return (
+            f"postgresql+asyncpg://{self.user}:{self.password}@{self.host}:{self.port}/{self.name}"
+        )
 
 
 class Settings(BaseSettings):
@@ -41,18 +43,16 @@ class Settings(BaseSettings):
 
     # API
     api_prefix: str = Field(default="/api/v1", alias="API_PREFIX")
-    allowed_hosts: list[str] = Field(
-        default=["localhost", "127.0.0.1"], alias="ALLOWED_HOSTS"
-    )
+    allowed_hosts: list[str] = Field(default=["localhost", "127.0.0.1"], alias="ALLOWED_HOSTS")
     cors_origins: list[str] = Field(
         default=["http://localhost:3000", "http://localhost:5173"], alias="CORS_ORIGINS"
     )
 
     # Security
-    secret_key: str = Field(alias="SECRET_KEY")
-    access_token_expire_minutes: int = Field(
-        default=30, alias="ACCESS_TOKEN_EXPIRE_MINUTES"
+    secret_key: str = Field(
+        default="dev-secret-key-change-in-production-min-32-chars", alias="SECRET_KEY"
     )
+    access_token_expire_minutes: int = Field(default=30, alias="ACCESS_TOKEN_EXPIRE_MINUTES")
     refresh_token_expire_days: int = Field(default=7, alias="REFRESH_TOKEN_EXPIRE_DAYS")
     algorithm: str = Field(default="HS256", alias="ALGORITHM")
 
@@ -69,8 +69,9 @@ class Settings(BaseSettings):
     def parse_json_list(cls, v: Any) -> list[str]:
         """Parse JSON string to list if needed."""
         if isinstance(v, str):
-            return json.loads(v)
-        return v
+            parsed: list[str] = json.loads(v)
+            return parsed
+        return v if isinstance(v, list) else [v]
 
     @field_validator("log_level")
     @classmethod

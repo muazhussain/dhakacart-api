@@ -49,7 +49,7 @@ type-check:
 	uv run mypy src/
 
 # Run all checks
-check: lint type-check
+check: format lint type-check
 	@echo "✓ All checks passed!"
 
 # Run tests
