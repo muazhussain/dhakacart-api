@@ -48,3 +48,5 @@ alembic/versions/*.pyc
 EOF
 
 .claude/
+.mypy_cache
+.ruff_cache
