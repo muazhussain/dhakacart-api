@@ -5,10 +5,14 @@ description = "Dhakacart API"
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
+    "alembic>=1.17.2",
+    "asyncpg>=0.31.0",
     "fastapi>=0.128.0",
+    "greenlet>=3.3.0",
     "pydantic-settings>=2.12.0",
     "python-dotenv>=1.2.1",
     "python-json-logger>=4.0.0",
+    "sqlalchemy>=2.0.45",
     "uvicorn>=0.40.0",
 ]
 
@@ -57,3 +61,11 @@ warn_redundant_casts = true
 warn_unused_ignores = true
 warn_no_return = true
 follow_imports = "normal"
+
+[[tool.mypy.overrides]]
+module = "pythonjsonlogger.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "alembic.*"
+ignore_missing_imports = true
