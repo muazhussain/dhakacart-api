@@ -1,10 +1,12 @@
+from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from src.core.config import settings
-from src.core.logging import setup_logging, get_logger
+from src.core.logging import get_logger, setup_logging
+from src.infrastructure.database import engine
 
 # Setup logging
 setup_logging()
@@ -12,7 +14,7 @@ logger = get_logger(__name__)
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
     """
     Application lifespan manager.
 
@@ -29,10 +31,27 @@ async def lifespan(app: FastAPI):
         },
     )
 
+    # Database connection info
+    db_host = (
+        settings.database.url.split("@")[1].split("/")[0]
+        if "@" in settings.database.url
+        else "unknown"
+    )
+    logger.info(
+        "Database engine initialized",
+        extra={
+            "host": db_host,
+            "pool_size": settings.database.pool_size,
+            "max_overflow": settings.database.max_overflow,
+        },
+    )
+
     yield
 
     # Shutdown
-    logger.info("Application shutting down...")
+    logger.info("Disposing database engine...")
+    await engine.dispose()
+    logger.info("Application shutdown complete")
 
 
 # Create app
@@ -59,7 +78,7 @@ app.add_middleware(
 
 # Root endpoint
 @app.get("/", tags=["Root"])
-async def root():
+async def root() -> dict[str, str]:
     """Root endpoint."""
     return {
         "message": "Welcome to Dhakacart",
@@ -70,7 +89,7 @@ async def root():
 
 # Health check endpoint
 @app.get("/health", tags=["Health"])
-async def health_check():
+async def health_check() -> dict[str, str | bool]:
     """Health check endpoint."""
     logger.debug("Health check called")
     return {
