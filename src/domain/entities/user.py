@@ -1,10 +1,11 @@
 """User domain entity."""
 
+from dataclasses import dataclass
 from datetime import UTC, datetime
 from enum import Enum
 from uuid import UUID, uuid4
 
-from pydantic import BaseModel, EmailStr, Field, field_validator
+from pydantic import EmailStr, Field, field_validator
 
 
 class Role(str, Enum):
@@ -14,7 +15,8 @@ class Role(str, Enum):
     ADMIN = "ADMIN"
 
 
-class User(BaseModel):
+@dataclass
+class User:
     """User entity representing a system user."""
 
     id: UUID = Field(default_factory=uuid4)
