@@ -9,6 +9,7 @@ dependencies = [
     "asyncpg>=0.31.0",
     "fastapi>=0.128.0",
     "greenlet>=3.3.0",
+    "passlib[bcrypt]>=1.7.4",
     "pydantic-settings>=2.12.0",
     "python-dotenv>=1.2.1",
     "python-json-logger>=4.0.0",
