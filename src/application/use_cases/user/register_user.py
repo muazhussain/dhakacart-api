@@ -1,18 +1,11 @@
 """User registration use case."""
 
-from uuid import uuid4
-
 from src.application.dto.requests.user_request import RegisterUserRequest
 from src.application.dto.responses.user_response import UserResponse
 from src.core.security import hash_password
-from src.domain.entities.user import User
+from src.domain.entities.user import Role, User
+from src.domain.exceptions.user import UserAlreadyExistsError
 from src.domain.repositories.user_repository import IUserRepository
-
-
-class UserAlreadyExistsError(Exception):
-    """Raised when attempting to register with existing email."""
-
-    pass
 
 
 class RegisterUser:
@@ -43,12 +36,11 @@ class RegisterUser:
 
         # Create domain entity
         user = User(
-            id=uuid4(),
             email=request.email,
             hashed_password=hashed_password,
             full_name=request.full_name,
             phone=request.phone,
-            role="CUSTOMER",
+            role=Role.CUSTOMER,
             is_active=True,
         )
 
