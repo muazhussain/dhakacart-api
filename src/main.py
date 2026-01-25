@@ -7,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from src.core.config import settings
 from src.core.logging import get_logger, setup_logging
 from src.infrastructure.database import engine
+from src.presentation.api.v1.routers import auth
 
 # Setup logging
 setup_logging()
@@ -74,6 +75,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Routers
+app.include_router(auth.router, prefix=settings.api_prefix)
 
 
 # Root endpoint
